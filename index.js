@@ -1,33 +1,29 @@
-// URL da API onde as mensagens são enviadas
-const apiUrl = 'https://devericke.github.io/ChatBot/'; // Substitua com o link real
+// URL do JSON do ChatBot
+const apiUrl = 'https://devericke.github.io/ChatBot/mensagens.json'; // JSON de mensagens enviadas pelo ChatBot
 
-// Função para adicionar uma mensagem ao chat
-function addMessage(text) {
+// Função para adicionar mensagens recebidas ao chat
+function addMessage(text, sender = "ChatBot") {
     const messagesContainer = document.getElementById('messages');
     const newMessage = document.createElement('div');
     newMessage.classList.add('message');
-    newMessage.textContent = text;
+    newMessage.textContent = `${sender}: ${text}`;
     messagesContainer.appendChild(newMessage);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// Função para buscar novas mensagens da API
+// Função para buscar mensagens do ChatBot
 function fetchMessages() {
     fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erro ao buscar mensagens');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(messages => {
-            // Exibe cada mensagem recebida
-            messages.forEach(message => {
-                addMessage(message.content); // Supondo que a API retorne { "content": "texto da mensagem" }
-            });
+            document.getElementById('messages').innerHTML = '';
+            messages.forEach(message => addMessage(message.content));
         })
-        .catch(error => console.error('Erro:', error));
+        .catch(error => console.error('Erro ao buscar mensagens:', error));
 }
 
-// Atualiza o chat com novas mensagens a cada 5 segundos
+// Atualiza mensagens do ChatBot a cada 5 segundos
 setInterval(fetchMessages, 5000);
+
+// Carrega mensagens iniciais
+fetchMessages();
